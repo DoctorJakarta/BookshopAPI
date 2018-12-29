@@ -1,0 +1,15 @@
+# ignore folders #
+build/
+bin/
+
+# ignore hidden #
+.settings/
+.classpath
+.project
+.idea/
+
+# Class files #
+*.classpath 
+
+#  Package Files #
+/.gradle/
