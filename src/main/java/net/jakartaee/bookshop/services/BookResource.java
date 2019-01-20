@@ -20,6 +20,7 @@ import net.jakartaee.bookshop.exceptions.DatabaseException;
 import net.jakartaee.bookshop.exceptions.NotDeletedException;
 import net.jakartaee.bookshop.exceptions.NotFoundException;
 import net.jakartaee.bookshop.model.Book;
+import net.jakartaee.bookshop.model.Book.SALE_STATUS;
 import net.jakartaee.bookshop.model.Tag;
 
 
@@ -56,6 +57,7 @@ public class BookResource {
 			Book book = new BookDAO().getBookById(id);
 			book.setReferences( new ReferenceDAO().getBookReferences(book.getId()) );
 			book.setTags( new TagDAO().getBookTags( book.getId()) );
+			System.out.println("Got book on SHELF: " + ( book.getStatus().equals(SALE_STATUS.SOLD)));
 	        return Response.ok(book, MediaType.APPLICATION_JSON).build();
 		} catch (NotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();

@@ -22,13 +22,30 @@ public class Book {
 //		public int getValue() { return dbValue; }
 //		public String toString() { return ""+dbValue;}
 //	}
+	
+	//
+	// The SALE_STATUS enum is only necessary for if/else checking 
+	// Ex: if ( book.getStatus().equals(STATUS.SOLD)) 
+	//
+	public static enum SALE_STATUS{ SHELF, STORE, HOLD, SOLD, NONE;
+	      public static SALE_STATUS get(String sStatus){
+	      for (SALE_STATUS status : values()) {
+	      //System.out.println("Checking STATUS name ("+status.name()+" equals: " + sStatus);
+	          if (status.name().equals(sStatus)) {
+	              return status;
+	          }
+	      }
+	      System.out.println("EEEEError get STATUS by value: " + sStatus);
+	      return NONE; // TODO: This should not occur.
+	      }
+	}
 																					// dateSold and isSold are not set on INSERT
-	public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought, dateSold, sold) ";
+	public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought, dateSold, status) ";
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought) ";
 	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?) ";
 	
 																					// dateSold and isSold are not set regular UPDATE
-	public static final String SQL_UPDATE_FIELDS = " author=?, title=?, year=?, desc=?, comment=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, sold=? ";
+	public static final String SQL_UPDATE_FIELDS = " author=?, title=?, year=?, desc=?, comment=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, status=? ";
 	//public static final String SQL_UPDATE_FIELDS = " authorId=?, title=?, year=?, desc=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?";
 	
 	private int _id;
@@ -43,7 +60,7 @@ public class Book {
 	private Long _priceMax;
 	private String _dateBought;
 	private String _dateSold;
-	private boolean _sold;
+	private String _status;
 	
 	private List<Reference> _references;
 	private List<Tag> _tags;
@@ -65,7 +82,7 @@ public class Book {
 		
 		_dateBought = rs.getString("dateBought");
 		_dateSold = rs.getString("dateSold");
-		_sold = rs.getBoolean("sold");
+		_status = rs.getString("status");
 		
 	}
 	
@@ -165,12 +182,12 @@ public class Book {
 	}
 
 
-	public boolean isSold() {
-		return _sold;
+	public String getStatus() {
+		return _status;
 	}
 
-	public void setSold(boolean sold) {
-		_sold = sold;
+	public void setStatus(String status) {
+		_status = status;
 	}
 
 	public List<Reference> getReferences() {
@@ -190,5 +207,15 @@ public class Book {
 	}
 
 
+	//
+	//
+	//
+	
+
+//	public boolean isSold() {
+//		return _sold;
+//	}
+
+	
 	
 }

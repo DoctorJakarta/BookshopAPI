@@ -101,7 +101,7 @@ public class BookDAO extends SQLiteDAO{
 
 			insertPS.setString( 10, b.getDateBought());
 			insertPS.setString( 11, b.getDateSold());
-			insertPS.setBoolean(12, b.isSold());
+			insertPS.setString(	12, b.getStatus());
 			
 			int numRows = insertPS.executeUpdate();
 			int newId = getNewId(conn);
@@ -133,7 +133,7 @@ public class BookDAO extends SQLiteDAO{
 
 			insertPS.setString( 10, b.getDateBought());
 			insertPS.setString( 11, b.getDateSold());
-			insertPS.setBoolean(12, b.isSold());
+			insertPS.setString(	12, b.getStatus());
 			
 			insertPS.setInt( 	13, b.getId());
 			int success = insertPS.executeUpdate();
