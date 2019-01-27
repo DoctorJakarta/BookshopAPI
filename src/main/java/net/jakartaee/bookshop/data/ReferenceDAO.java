@@ -66,7 +66,7 @@ public class ReferenceDAO extends SQLiteDAO{
 			else 								insertPS.setNull( 2, java.sql.Types.INTEGER);
 			insertPS.setString( 3, r.getUrl());
 			insertPS.setString( 4, r.getDesc());
-			insertPS.setString( 5, r.getComment());
+			insertPS.setString( 5, r.getNotes());
 			
 			int numRows = insertPS.executeUpdate();
 			int newId = getNewId(conn);
@@ -87,7 +87,7 @@ public class ReferenceDAO extends SQLiteDAO{
 			else 						insertPS.setNull( 2, java.sql.Types.INTEGER);
 			insertPS.setString( 3, r.getUrl());
 			insertPS.setString( 4, r.getDesc());
-			insertPS.setString( 5, r.getComment());
+			insertPS.setString( 5, r.getNotes());
 			
 			insertPS.setInt( 	6, r.getId());
 			int success = insertPS.executeUpdate();

@@ -1,8 +1,7 @@
 package net.jakartaee.bookshop.services;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -15,16 +14,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import net.jakartaee.bookshop.data.TagDAO;
-import net.jakartaee.bookshop.data.ReferenceDAO;
+
+import net.jakartaee.bookshop.data.SubjectDAO;
 import net.jakartaee.bookshop.exceptions.DatabaseException;
 import net.jakartaee.bookshop.exceptions.NotDeletedException;
 import net.jakartaee.bookshop.exceptions.NotFoundException;
-import net.jakartaee.bookshop.model.Tag;
+import net.jakartaee.bookshop.model.Subject;
 
 
-@Path("tag")
-public class TagResource {
+
+@Path("subject")
+public class SubjectResource {
 
     /**
      * Method handling HTTP GET requests. The returned object will be sent
@@ -34,14 +34,10 @@ public class TagResource {
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTags() {
-    	ReferenceDAO rdao = new ReferenceDAO();
+    public Response getSubjects() {
  		try {
-			List<Tag> tagList = new TagDAO().getAllTags();
-			//Map<String, Tag> tagMap = tagList.stream().collect(Collectors.toMap(Tag::getKey, item -> item));
-			//Map<String, String> tagMap = tagList.stream().collect(Collectors.toMap(Tag::getKey, tag -> tag.getName()));
-	        return Response.ok(tagList, MediaType.APPLICATION_JSON).build();
-	        //return Response.ok(tagMap, MediaType.APPLICATION_JSON).build();
+			List<Subject> subjects = new SubjectDAO().getSubjects();
+	        return Response.ok(subjects, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
@@ -49,12 +45,12 @@ public class TagResource {
     }
 
     @GET
-    @Path("{tagKey}")
+    @Path("{subjectId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTagById( @PathParam("tagKey") Integer id) {
+    public Response getTagById( @PathParam("subjectId") Long id) {				// Book has subjectID as Long to handle SQL  NULL
 		try {
-			Tag tag = new TagDAO().getTagById(id);
-	        return Response.ok(tag, MediaType.APPLICATION_JSON).build();
+			Subject subject = new SubjectDAO().getSubjectById(id);
+	        return Response.ok(subject, MediaType.APPLICATION_JSON).build();
 		} catch (NotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
 		} catch (DatabaseException e) {
@@ -67,11 +63,9 @@ public class TagResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addTag(Tag tag) {
+    public Response addTag(Subject subject) {
     	try {
-			new TagDAO().insertTag(tag);
-			// get new tagKey
-			//return Response.ok(tag, MediaType.APPLICATION_JSON).build();
+			new SubjectDAO().insertSubject(subject);;
 			return Response.ok(null, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
@@ -82,10 +76,10 @@ public class TagResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateTag(Tag tag) {
+    public Response updateTag(Subject subject) {
     	try {
-			new TagDAO().updateTag(tag);
-			return Response.ok(tag, MediaType.APPLICATION_JSON).build();
+			new SubjectDAO().updateSubject(subject);
+			return Response.ok(subject, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
@@ -93,11 +87,11 @@ public class TagResource {
     }
     
     @DELETE
-    @Path("{tagId}")
+    @Path("{subjectId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteTagById( @PathParam("tagId") Integer id) {
+    public Response deleteTagById( @PathParam("subjectId") Integer id) {
 		try {
-			new TagDAO().deleteTag(id);
+			new SubjectDAO().deleteSubject(id);
 	        return Response.ok(null, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
 			e.printStackTrace();

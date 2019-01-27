@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 
 import net.jakartaee.bookshop.data.BookDAO;
 import net.jakartaee.bookshop.data.ReferenceDAO;
+import net.jakartaee.bookshop.data.SubjectDAO;
 import net.jakartaee.bookshop.data.TagDAO;
 import net.jakartaee.bookshop.exceptions.DatabaseException;
 import net.jakartaee.bookshop.exceptions.NotDeletedException;
@@ -55,7 +56,8 @@ public class BookResource {
     public Response getBookById( @PathParam("bookId") Integer id) {
 		try {
 			Book book = new BookDAO().getBookById(id);
-			book.setReferences( new ReferenceDAO().getBookReferences(book.getId()) );
+			if ( book.getSubjectId() != null ) book.setSubject(new SubjectDAO().getSubjectById(book.getSubjectId()));
+			book.setReferences(new ReferenceDAO().getBookReferences(book.getId()) );
 			book.setTags( new TagDAO().getBookTags( book.getId()) );
 			System.out.println("Got book on SHELF: " + ( book.getStatus().equals(SALE_STATUS.SOLD)));
 	        return Response.ok(book, MediaType.APPLICATION_JSON).build();
@@ -67,20 +69,20 @@ public class BookResource {
 		}
     }   
     
-    @GET
-    @Path("tag/{tagKey}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getBookById( @PathParam("tagKey") String tagKey) {
-		try {
-			List<Book> books = new BookDAO().getBooksByTags(tagKey);
-	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
-		} catch (NotFoundException e) {
-			return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
-		} catch (DatabaseException e) {
-			e.printStackTrace();
-			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
-		}
-    }   
+//    @GET
+//    @Path("tag/{tagKey}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response getBookById( @PathParam("tagKey") String tagKey) {
+//		try {
+//			List<Book> books = new BookDAO().getBooksByTags(tagKey);
+//	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
+//		} catch (NotFoundException e) {
+//			return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+//		} catch (DatabaseException e) {
+//			e.printStackTrace();
+//			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+//		}
+//    }   
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
@@ -91,7 +93,7 @@ public class BookResource {
 			int bookId = new BookDAO().insertBook(book);
 			book.setId(bookId);
 			for ( Tag t: book.getTags() ) {				
-				tdao.insertBookTag(book.getId(), t.getKey() );
+				tdao.insertBookTag(book.getId(), t.getId() );
 			}			
 			return Response.ok(book, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
@@ -109,7 +111,7 @@ public class BookResource {
 			new BookDAO().updateBook(book);
 			tdao.deleteBookTags(book.getId());
 			for ( Tag t: book.getTags() ) {				
-				tdao.insertBookTag(book.getId(), t.getKey() );
+				tdao.insertBookTag(book.getId(), t.getId() );
 			}
 			return Response.ok(book, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {

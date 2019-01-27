@@ -7,16 +7,16 @@ import java.util.Optional;
 
 public class Reference {
     
-	public static final String SQL_INSERT_FIELDS = " ( bookId, price, url, desc, comment ) ";
+	public static final String SQL_INSERT_FIELDS = " ( bookId, price, url, desc, notes ) ";
 	public static final String SQL_INSERT_VALUES = " VALUES ( ?,?,?,?,? ) ";
-	public static final String SQL_UPDATE_FIELDS = " bookId=?, price=?, url=?, desc=?, comment=? ";
+	public static final String SQL_UPDATE_FIELDS = " bookId=?, price=?, url=?, desc=?, notes=? ";
 	
 	private int _id;
 	private int _bookId;
 	private Long _price;
 	private String _url;
 	private String _desc;
-	private String _comment;
+	private String _notes;
 
 	public Reference() {} // This is required for jersey-media-json-jackson binding for the doPost (Book book)
 	
@@ -26,7 +26,7 @@ public class Reference {
 		_price = Optional.ofNullable(rs.getBigDecimal("price")).map(BigDecimal::longValue).orElse(null);
 		_url = rs.getString("url");
 		_desc = rs.getString("desc");
-		_comment = rs.getString("comment");		
+		_notes = rs.getString("notes");		
 	}
 
 	public int getId() {
@@ -69,14 +69,14 @@ public class Reference {
 		_desc = desc;
 	}
 
-	public String getComment() {
-		return _comment;
+	public String getNotes() {
+		return _notes;
 	}
 
-	public void setComment(String comment) {
-		_comment = comment;
+	public void setNotes(String notes) {
+		_notes = notes;
 	}
-	
+
 
 	
 }

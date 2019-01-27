@@ -16,15 +16,15 @@ import net.jakartaee.bookshop.model.Tag;
 
 public class TagDAO extends SQLiteDAO{
 	private static final String SQL_GET_ALL_TAGS = "SELECT * FROM tag ";
-	private static final String SQL_GET_BOOK_TAGS = "SELECT * FROM tag JOIN xref_tag_book USING ( tagKey ) WHERE bookId=?";
+	private static final String SQL_GET_BOOK_TAGS = "SELECT * FROM tag JOIN xref_book_tag USING ( tagId ) WHERE bookId=?";
 
-	private static final String SQL_GET_TAG_BY_KEY = "SELECT * FROM tag WHERE tagKey=?";
+	private static final String SQL_GET_TAG = "SELECT * FROM tag WHERE tagId=?";
 	private static final String SQL_INSERT_TAG = "INSERT INTO tag"  + Tag.SQL_INSERT_FIELDS + Tag.SQL_INSERT_VALUES;
-	private static final String SQL_UPDATE_TAG = "UPDATE tag SET "  + Tag.SQL_UPDATE_FIELDS + " WHERE tagKey=?";
-	private static final String SQL_DELETE_TAG = "DELETE FROM tag WHERE tagKey=?";
+	private static final String SQL_UPDATE_TAG = "UPDATE tag SET "  + Tag.SQL_UPDATE_FIELDS + " WHERE tagId=?";
+	private static final String SQL_DELETE_TAG = "DELETE FROM tag WHERE tagId=?";
 
-	private static final String SQL_INSERT_BOOK_TAG = "INSERT INTO xref_tag_book ( tagKey, bookId ) VALUES (?,?)";
-	private static final String SQL_DELETE_BOOK_TAGS = "DELETE FROM xref_tag_book WHERE bookId=?";
+	private static final String SQL_INSERT_BOOK_TAG = "INSERT INTO xref_book_tag ( bookId, tagId ) VALUES (?,?)";
+	private static final String SQL_DELETE_BOOK_TAGS = "DELETE FROM xref_book_tag WHERE bookId=?";
 	
 	public List<Tag> getAllTags() throws DatabaseException{
 		List<Tag> tags = new ArrayList<>();
@@ -59,16 +59,16 @@ public class TagDAO extends SQLiteDAO{
 	}
 
 	
-	public Tag getTagByKey(String key) throws NotFoundException, DatabaseException{
+	public Tag getTagById(Integer id) throws NotFoundException, DatabaseException{
 		Tag tag = null;
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
-				PreparedStatement getPS = conn.prepareStatement(SQL_GET_TAG_BY_KEY);){
-			getPS.setString( 	1, key);
+				PreparedStatement getPS = conn.prepareStatement(SQL_GET_TAG);){
+			getPS.setInt( 	1, id);
 		
 			ResultSet rs = getPS.executeQuery();
 			if (!rs.next()) {
-				throw new NotFoundException("Tag not found for id: " + key);
+				throw new NotFoundException("Tag not found for id: " + id);
 			}
 			else {
 				tag = new Tag(rs);		
@@ -84,8 +84,8 @@ public class TagDAO extends SQLiteDAO{
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement insertPS = conn.prepareStatement(SQL_INSERT_TAG);){
 		
-			insertPS.setString( 1, b.getKey());
-			insertPS.setString( 2, b.getName());
+			//insertPS.setString( 1, b.getKey());
+			insertPS.setString( 1, b.getName());
 
 			
 			int numRows = insertPS.executeUpdate();
@@ -104,22 +104,22 @@ public class TagDAO extends SQLiteDAO{
 		
 			insertPS.setString( 1, b.getName());
 			
-			insertPS.setString( 2, b.getKey());
+			insertPS.setInt( 2, b.getId());
 			int success = insertPS.executeUpdate();
 
 		} catch (SQLException e) {
 			throw new DatabaseException("Update Tag was not successful.",e);
 		}
 	}
-	public void deleteTag(String key) throws NotDeletedException, DatabaseException {
+	public void deleteTag(Integer id) throws NotDeletedException, DatabaseException {
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement delPS = conn.prepareStatement(SQL_DELETE_TAG);){
 			
-			delPS.setString( 	1, key);
+			delPS.setInt( 	1, id);
 		
 			if ( delPS.executeUpdate() == 0 ) {
-				throw new NotDeletedException("Tag not deleted for key: " + key);
+				throw new NotDeletedException("Tag not deleted for id: " + id);
 			}
 		} catch (SQLException e) {
 			throw new DatabaseException("Delete Tag was not successful.",e);
@@ -141,13 +141,13 @@ public class TagDAO extends SQLiteDAO{
 			throw new DatabaseException("Delete BookTags was not successful.",e);
 		}
 	}
-	public int insertBookTag(Integer id, String key) throws DatabaseException{
+	public int insertBookTag(Integer bookId, Integer tagId) throws DatabaseException{
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement insertPS = conn.prepareStatement(SQL_INSERT_BOOK_TAG);){
 		
-			insertPS.setString( 1, key);
-			insertPS.setInt( 	2, id);
+			insertPS.setInt( 1, bookId);
+			insertPS.setInt( 2, tagId);
 			
 			return insertPS.executeUpdate();
 		} catch (SQLException e) {
