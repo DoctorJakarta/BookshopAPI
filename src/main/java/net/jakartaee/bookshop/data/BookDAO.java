@@ -15,7 +15,8 @@ import net.jakartaee.bookshop.model.Book;
 
 
 public class BookDAO extends SQLiteDAO{
-	private static final String SQL_GET_ALL_BOOKS = "SELECT * FROM book";
+	private static final String SQL_GET_ALL_BOOKS = "SELECT * FROM book ORDER BY year";
+	private static final String SQL_GET_BOOKS_BY_YEAR = "SELECT * FROM book WHERE year=?";
 	//private static final String SQL_GET_BOOKS = "SELECT * FROM book JOIN xref_book_tag USING (bookId) JOIN tag USING (tagKey) ";
 	//private static final String SQL_GET_BOOKS_BY_TAG = "SELECT * FROM book LEFT JOIN subject USING (subjectId) JOIN xref_book_tag USING (bookId) WHERE tagId=?" ;
 
@@ -60,6 +61,29 @@ public class BookDAO extends SQLiteDAO{
 //		}
 //		return books;
 //	}
+
+	public List<Book> getBooksByQueryField(String field, String value) throws DatabaseException{
+		// TODO: support other fields
+		String sql = SQL_GET_BOOKS_BY_YEAR;
+		return getBooksByQuery(sql, value);
+	}
+
+	private List<Book> getBooksByQuery(String sql, String value) throws DatabaseException{
+		List<Book> books = new ArrayList<>();
+		try(
+				Connection conn = SQLiteDatabase.getConnection();
+				PreparedStatement getPS = conn.prepareStatement(sql);){
+		
+			getPS.setString( 	1, value);
+			ResultSet rs = getPS.executeQuery();
+			while (rs.next()) {
+				books.add(new Book(rs));
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException("getBooks was not successful.",e);
+		}
+		return books;
+	}
 	
 	public Book getBookById(Integer id) throws NotFoundException, DatabaseException{
 		Book book = null;
@@ -98,22 +122,26 @@ public class BookDAO extends SQLiteDAO{
 			insertPS.setInt( 	6, b.getYear());
 			insertPS.setString( 7, b.getEdition());
 			insertPS.setString( 8, b.getPrinting());
+			insertPS.setString( 9, b.getSize());
+			insertPS.setString( 10, b.getPages());
+//			if ( b.getPages() != null ) 		insertPS.setLong( 9, b.getPages()); 
+//			else 								insertPS.setNull( 9, java.sql.Types.INTEGER);
 
-			insertPS.setString( 9, b.getDesc());
-			insertPS.setString( 10, b.getNotes());
-			if ( b.getPrice() != null ) 		insertPS.setLong( 11, b.getPrice()); 
-			else 								insertPS.setNull( 11, java.sql.Types.INTEGER);
-			if ( b.getPriceBought() != null ) 	insertPS.setLong( 12, b.getPriceBought()); 
-			else 								insertPS.setNull( 12, java.sql.Types.INTEGER);
-			if ( b.getPriceMin() != null ) 		insertPS.setLong( 13, b.getPriceMin()); 
+			insertPS.setString( 11, b.getDesc());
+			insertPS.setString( 12, b.getNotes());
+			if ( b.getPrice() != null ) 		insertPS.setLong( 13, b.getPrice()); 
 			else 								insertPS.setNull( 13, java.sql.Types.INTEGER);
-			if ( b.getPriceMax() != null ) 		insertPS.setLong( 14, b.getPriceMax()); 
+			if ( b.getPriceBought() != null ) 	insertPS.setLong( 14, b.getPriceBought()); 
 			else 								insertPS.setNull( 14, java.sql.Types.INTEGER);
+			if ( b.getPriceMin() != null ) 		insertPS.setLong( 15, b.getPriceMin()); 
+			else 								insertPS.setNull( 15, java.sql.Types.INTEGER);
+			if ( b.getPriceMax() != null ) 		insertPS.setLong( 16, b.getPriceMax()); 
+			else 								insertPS.setNull( 16, java.sql.Types.INTEGER);
 
-			insertPS.setString( 15, b.getDateBought());
-			insertPS.setString( 16, b.getDateSold());
-			insertPS.setString(	17, b.getStatus());
-			insertPS.setString( 18, b.getCondition());
+			insertPS.setString( 17, b.getDateBought());
+			insertPS.setString( 18, b.getDateSold());
+			insertPS.setString(	19, b.getStatus());
+			insertPS.setString( 20, b.getCondition());
 			
 			int numRows = insertPS.executeUpdate();
 			int newId = getNewId(conn);
@@ -141,24 +169,28 @@ public class BookDAO extends SQLiteDAO{
 			insertPS.setInt( 	6, b.getYear());
 			insertPS.setString( 7, b.getEdition());
 			insertPS.setString( 8, b.getPrinting());
+			insertPS.setString( 9, b.getSize());
+			insertPS.setString( 10, b.getPages());
+//			if ( b.getPages() != null ) 		insertPS.setLong( 9, b.getPages()); 
+//			else 								insertPS.setNull( 9, java.sql.Types.INTEGER);
 
-			insertPS.setString( 9, b.getDesc());
-			insertPS.setString( 10, b.getNotes());
-			if ( b.getPrice() != null ) 		insertPS.setLong( 11, b.getPrice()); 
-			else 								insertPS.setNull( 11, java.sql.Types.INTEGER);
-			if ( b.getPriceBought() != null ) 	insertPS.setLong( 12, b.getPriceBought()); 
-			else 								insertPS.setNull( 12, java.sql.Types.INTEGER);
-			if ( b.getPriceMin() != null ) 		insertPS.setLong( 13, b.getPriceMin()); 
+			insertPS.setString( 11, b.getDesc());
+			insertPS.setString( 12, b.getNotes());
+			if ( b.getPrice() != null ) 		insertPS.setLong( 13, b.getPrice()); 
 			else 								insertPS.setNull( 13, java.sql.Types.INTEGER);
-			if ( b.getPriceMax() != null ) 		insertPS.setLong( 14, b.getPriceMax()); 
+			if ( b.getPriceBought() != null ) 	insertPS.setLong( 14, b.getPriceBought()); 
 			else 								insertPS.setNull( 14, java.sql.Types.INTEGER);
+			if ( b.getPriceMin() != null ) 		insertPS.setLong( 15, b.getPriceMin()); 
+			else 								insertPS.setNull( 15, java.sql.Types.INTEGER);
+			if ( b.getPriceMax() != null ) 		insertPS.setLong( 16, b.getPriceMax()); 
+			else 								insertPS.setNull( 16, java.sql.Types.INTEGER);
 
-			insertPS.setString( 15, b.getDateBought());
-			insertPS.setString( 16, b.getDateSold());
-			insertPS.setString(	17, b.getStatus());
-			insertPS.setString( 18, b.getCondition());
+			insertPS.setString( 17, b.getDateBought());
+			insertPS.setString( 18, b.getDateSold());
+			insertPS.setString(	19, b.getStatus());
+			insertPS.setString( 20, b.getCondition());
 			
-			insertPS.setInt( 	19, b.getId());
+			insertPS.setInt( 	21, b.getId());
 			int success = insertPS.executeUpdate();
 
 		} catch (SQLException e) {

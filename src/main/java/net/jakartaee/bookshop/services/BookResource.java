@@ -69,20 +69,20 @@ public class BookResource {
 		}
     }   
     
-//    @GET
-//    @Path("tag/{tagKey}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getBookById( @PathParam("tagKey") String tagKey) {
-//		try {
-//			List<Book> books = new BookDAO().getBooksByTags(tagKey);
-//	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
-//		} catch (NotFoundException e) {
-//			return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
-//		} catch (DatabaseException e) {
-//			e.printStackTrace();
-//			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
-//		}
-//    }   
+    @GET
+    @Path("{queryField}/{queryValue}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getBookById( @PathParam("queryField") String queryField,  @PathParam("queryValue") String queryValue) {
+		try {
+			List<Book> books = new BookDAO().getBooksByQueryField(queryField, queryValue);
+	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
+		} catch (NotFoundException e) {
+			return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }   
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

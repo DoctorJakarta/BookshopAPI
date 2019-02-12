@@ -43,12 +43,12 @@ public class Book {
 	
 																					// dateSold should also be onINSERT
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought, dateSold, status) ";
-	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, desc, notes, price, priceBought, priceMin, priceMax, dateBought, dateSold, status, condition) ";
+	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, size,  pages, desc, notes, price, priceBought, priceMin, priceMax, dateBought, dateSold, status, condition) ";
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought) ";
-	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?) ";
+	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?) ";
 	
 																					// dateSold and isSold are not set regular UPDATE
-	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, desc=?, notes=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, status=?, condition=? ";
+	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, size=?, pages=?, desc=?, notes=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, status=?, condition=? ";
 	//public static final String SQL_UPDATE_FIELDS = " authorId=?, title=?, year=?, desc=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?";
     
 	private int _id;
@@ -60,6 +60,8 @@ public class Book {
 	private int _year;
 	private String _edition;
 	private String _printing;
+	private String _size;
+	private String _pages;			// Ex: xiv 222 pp. w/ 16 plates
 	
 	private String _desc;
 	private String _notes;
@@ -90,7 +92,10 @@ public class Book {
 		_year = rs.getInt("year");
 		_edition = rs.getString("edition");
 		_printing = rs.getString("printing");
-
+		//_pages = Optional.ofNullable(rs.getBigDecimal("pages")).map(BigDecimal::longValue).orElse(null);
+		_size = rs.getString("size");
+		_pages = rs.getString("pages");
+			
 		_desc = rs.getString("desc");
 		_notes = rs.getString("notes");
 		 
@@ -181,6 +186,24 @@ public class Book {
 
 	public void setPrinting(String printing) {
 		_printing = printing;
+	}
+
+
+
+	public String getSize() {
+		return _size;
+	}
+
+	public void setSize(String size) {
+		_size = size;
+	}
+
+	public String getPages() {
+		return _pages;
+	}
+
+	public void setPages(String pages) {
+		_pages = pages;
 	}
 
 	public String getDesc() {
