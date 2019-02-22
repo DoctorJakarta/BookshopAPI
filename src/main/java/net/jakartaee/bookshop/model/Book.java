@@ -43,12 +43,12 @@ public class Book {
 	
 																					// dateSold should also be onINSERT
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought, dateSold, status) ";
-	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, size,  pages, desc, notes, price, priceBought, priceMin, priceMax, dateBought, dateSold, status, condition) ";
+	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, volume, size,  pages, binding, condition, details, contents, notes, price, priceBought, priceMin, priceMax, dateBought, dateSold, urlRelative, status) ";
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought) ";
-	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?) ";
+	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,? ) ";
 	
 																					// dateSold and isSold are not set regular UPDATE
-	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, size=?, pages=?, desc=?, notes=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, status=?, condition=? ";
+	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, volume=?, size=?, pages=?, binding=?, condition=?, details=?, contents=?, notes=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, urlRelative=?, status=? ";
 	//public static final String SQL_UPDATE_FIELDS = " authorId=?, title=?, year=?, desc=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?";
     
 	private int _id;
@@ -60,10 +60,15 @@ public class Book {
 	private int _year;
 	private String _edition;
 	private String _printing;
+	private String _volume;
 	private String _size;
 	private String _pages;			// Ex: xiv 222 pp. w/ 16 plates
+	private String _binding;
+	private String _condition;
 	
-	private String _desc;
+	private String _details;
+	private String _contents;
+	
 	private String _notes;
 	private Long _price;
 	private Long _priceBought;
@@ -71,8 +76,9 @@ public class Book {
 	private Long _priceMax;
 	private String _dateBought;
 	private String _dateSold;
+	private String _urlRelative;
 	private String _status;
-	private String _condition;
+
 	
 	private Subject _subject;
 	
@@ -92,11 +98,15 @@ public class Book {
 		_year = rs.getInt("year");
 		_edition = rs.getString("edition");
 		_printing = rs.getString("printing");
+		_volume = rs.getString("volume");
 		//_pages = Optional.ofNullable(rs.getBigDecimal("pages")).map(BigDecimal::longValue).orElse(null);
 		_size = rs.getString("size");
 		_pages = rs.getString("pages");
-			
-		_desc = rs.getString("desc");
+		_binding = rs.getString("binding");
+
+		_condition = rs.getString("condition");
+		_details = rs.getString("details");
+		_contents = rs.getString("contents");
 		_notes = rs.getString("notes");
 		 
 		_price = Optional.ofNullable(rs.getBigDecimal("price")).map(BigDecimal::longValue).orElse(null);
@@ -106,10 +116,9 @@ public class Book {
 		
 		_dateBought = rs.getString("dateBought");
 		_dateSold = rs.getString("dateSold");
+		_urlRelative = rs.getString("urlRelative");
 		_status = rs.getString("status");
 
-		_condition = rs.getString("condition");
-		
 	}
 	
 	//
@@ -188,8 +197,6 @@ public class Book {
 		_printing = printing;
 	}
 
-
-
 	public String getSize() {
 		return _size;
 	}
@@ -206,12 +213,36 @@ public class Book {
 		_pages = pages;
 	}
 
-	public String getDesc() {
-		return _desc;
+	public String getBinding() {
+		return _binding;
 	}
 
-	public void setDesc(String desc) {
-		_desc = desc;
+	public void setBinding(String binding) {
+		_binding = binding;
+	}
+
+	public String getCondition() {
+		return _condition;
+	}
+
+	public void setCondition(String condition) {
+		_condition = condition;
+	}
+
+	public String getDetails() {
+		return _details;
+	}
+
+	public void setDetails(String details) {
+		_details = details;
+	}
+
+	public String getContents() {
+		return _contents;
+	}
+
+	public void setContents(String contents) {
+		_contents = contents;
 	}
 
 	public String getNotes() {
@@ -278,12 +309,12 @@ public class Book {
 		_status = status;
 	}
 
-	public String getCondition() {
-		return _condition;
+	public Subject getSubject() {
+		return _subject;
 	}
 
-	public void setCondition(String condition) {
-		_condition = condition;
+	public void setSubject(Subject subject) {
+		_subject = subject;
 	}
 
 	public List<Reference> getReferences() {
@@ -302,13 +333,22 @@ public class Book {
 		_tags = tags;
 	}
 
-	public Subject getSubject() {
-		return _subject;
+	public String getVolume() {
+		return _volume;
 	}
 
-	public void setSubject(Subject subject) {
-		_subject = subject;
+	public void setVolume(String volume) {
+		_volume = volume;
 	}
+
+	public String getUrlRelative() {
+		return _urlRelative;
+	}
+
+	public void setUrlRelative(String urlRelative) {
+		_urlRelative = urlRelative;
+	}
+
 
 	
 
