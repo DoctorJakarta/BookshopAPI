@@ -64,20 +64,29 @@ public class BookDAO extends SQLiteDAO{
 
 	public List<Book> getBooksByQueryField(String field, String value) throws DatabaseException{
 		// TODO: support other fields
+		boolean isLike = false;
 		String sql = null;
 		if 		( "year".equals(field))   sql = SQL_GET_BOOKS_BY_FIELD + "year=?";
 		else if ( "status".equals(field)) sql = SQL_GET_BOOKS_BY_FIELD + "status=?";
-		else throw new DatabaseException("Query not supported for field: " + field);
-		return getBooksByQuery(sql, value);
+		else if ( "author".equals(field)) { 
+			sql = SQL_GET_BOOKS_BY_FIELD + "author LIKE ?";
+			isLike = true;
+		}
+		else {
+			throw new DatabaseException("Query not supported for field: " + field);
+		}
+		return getBooksByQuery(sql, value, isLike);
 	}
 
-	private List<Book> getBooksByQuery(String sql, String value) throws DatabaseException{
+	private List<Book> getBooksByQuery(String sql, String value, boolean isLike) throws DatabaseException{
 		List<Book> books = new ArrayList<>();
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement getPS = conn.prepareStatement(sql);){
 		
-			getPS.setString( 	1, value);
+			if ( isLike ) getPS.setString( 	1, "%" + value + "%");
+			else 		  getPS.setString( 	1, value);
+			
 			ResultSet rs = getPS.executeQuery();
 			while (rs.next()) {
 				books.add(new Book(rs));

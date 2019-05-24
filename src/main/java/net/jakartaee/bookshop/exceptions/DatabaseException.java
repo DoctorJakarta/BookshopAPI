@@ -14,8 +14,10 @@ public class DatabaseException extends Exception {
 	}
 
 	public ErrorResponse getErrorResponse() {
-		return new ErrorResponse(this.getMessage(), this.getCause().getMessage(), 400);
-	}
+		if ( this.getCause() != null )
+			return new ErrorResponse(this.getMessage(), this.getCause().getMessage(), 400);
+		else
+			return new ErrorResponse(this.getMessage(), null, 400);	}
 
 
 }
