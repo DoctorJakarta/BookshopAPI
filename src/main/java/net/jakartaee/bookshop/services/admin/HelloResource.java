@@ -1,4 +1,4 @@
-package net.jakartaee.bookshop.services;
+package net.jakartaee.bookshop.services.admin;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

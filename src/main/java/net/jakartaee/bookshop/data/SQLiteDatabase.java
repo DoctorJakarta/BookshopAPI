@@ -7,7 +7,9 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public final class SQLiteDatabase {
 	
-	private static final String DB_PATH = "/dev/repos/Bookshop/bookshop.sqlite";
+	//private static final String DB_PATH = "/dev/repos/Bookshop/bookshop.sqlite";
+	//private static final String DB_PATH = "/opt/apps/data/bookshop.sqlite";
+	private static final String DB_PATH = "/home/bitnami/data/bookshop.sqlite";				// This is a better location for the bitnami AWS instances.  Does not require root access to create folder in /opt/apps
 	
 	private SQLiteDatabase() {}		// Ensure this singleton database Helper is not instantiated.  
 	

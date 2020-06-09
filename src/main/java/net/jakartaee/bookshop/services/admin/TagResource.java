@@ -1,4 +1,4 @@
-package net.jakartaee.bookshop.services;
+package net.jakartaee.bookshop.services.admin;
 
 import java.util.List;
 import java.util.Map;

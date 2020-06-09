@@ -6,6 +6,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+//
+// The Book Model includes only fields that are returned in the PUBLIC API
+//
+
 public class Book {
 	
 //	public static enum SECTION { BIOGRAPHY(1), BUSINESS(2), CHILDREN(3), COOKBOOK(4), HISTORY(5), LITERATURE(6), MYSTERY(7),  SCIENCE(8), UNCLASSIFIED(0);
@@ -27,7 +31,7 @@ public class Book {
 	// The SALE_STATUS enum is only necessary for if/else checking 
 	// Ex: if ( book.getStatus().equals(STATUS.SOLD)) 
 	//
-	public static enum SALE_STATUS{ PREP, LIST, SALE, HOLD, KEEP, SOLD, NONE;
+	public static enum SALE_STATUS{ PREP, REPAIR, LIST, SALE, HOLD, KEEP, SOLD, NONE;
 	      public static SALE_STATUS get(String sStatus){
 	      for (SALE_STATUS status : values()) {
 	      //System.out.println("Checking STATUS name ("+status.name()+" equals: " + sStatus);
@@ -43,12 +47,12 @@ public class Book {
 	
 																					// dateSold should also be onINSERT
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought, dateSold, status) ";
-	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, volume, size,  pages, binding, condition, details, contents, notes, price, priceBought, priceMin, priceMax, dateBought, dateSold, urlRelative, status) ";
+	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, volume, size,  pages, binding, condition, details, contents, notes, price, priceBought, priceMin, priceMax, dateBought, dateSold, urlRelative, rarity, reprints, status) ";
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought) ";
-	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,? ) ";
+	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,  ? ) ";
 	
 																					// dateSold and isSold are not set regular UPDATE
-	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, volume=?, size=?, pages=?, binding=?, condition=?, details=?, contents=?, notes=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, urlRelative=?, status=? ";
+	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, volume=?, size=?, pages=?, binding=?, condition=?, details=?, contents=?, notes=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, urlRelative=?, rarity=?, reprints=?, status=? ";
 	//public static final String SQL_UPDATE_FIELDS = " authorId=?, title=?, year=?, desc=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?";
     
 	private int _id;
@@ -69,20 +73,14 @@ public class Book {
 	private String _details;
 	private String _contents;
 	
-	private String _notes;
 	private Long _price;
-	private Long _priceBought;
-	private Long _priceMin;
-	private Long _priceMax;
-	private String _dateBought;
-	private String _dateSold;
 	private String _urlRelative;
+	
 	private String _status;
 
 	
 	private Subject _subject;
 	
-	private List<Reference> _references;
 	private List<Tag> _tags;
 
 	public Book() {} // This is required for jersey-media-json-jackson binding for the doPost (Book book)
@@ -107,16 +105,11 @@ public class Book {
 		_condition = rs.getString("condition");
 		_details = rs.getString("details");
 		_contents = rs.getString("contents");
-		_notes = rs.getString("notes");
 		 
 		_price = Optional.ofNullable(rs.getBigDecimal("price")).map(BigDecimal::longValue).orElse(null);
-		_priceBought = Optional.ofNullable(rs.getBigDecimal("priceBought")).map(BigDecimal::longValue).orElse(null);
-		_priceMin = Optional.ofNullable(rs.getBigDecimal("priceMin")).map(BigDecimal::longValue).orElse(null);
-		_priceMax = Optional.ofNullable(rs.getBigDecimal("priceMax")).map(BigDecimal::longValue).orElse(null);
 		
-		_dateBought = rs.getString("dateBought");
-		_dateSold = rs.getString("dateSold");
 		_urlRelative = rs.getString("urlRelative");
+		
 		_status = rs.getString("status");
 
 	}
@@ -245,60 +238,16 @@ public class Book {
 		_contents = contents;
 	}
 
-	public String getNotes() {
-		return _notes;
-	}
-
-	public void setNotes(String notes) {
-		_notes = notes;
-	}
 
 	public Long getPrice() {
 		return _price;
 	}
+	public String getPriceStr() {
+		return _price + ".00";
+	}
 
 	public void setPrice(Long price) {
 		_price = price;
-	}
-
-	public Long getPriceBought() {
-		return _priceBought;
-	}
-
-	public void setPriceBought(Long priceBought) {
-		_priceBought = priceBought;
-	}
-
-	public Long getPriceMin() {
-		return _priceMin;
-	}
-
-	public void setPriceMin(Long priceMin) {
-		_priceMin = priceMin;
-	}
-
-	public Long getPriceMax() {
-		return _priceMax;
-	}
-
-	public void setPriceMax(Long priceMax) {
-		_priceMax = priceMax;
-	}
-
-	public String getDateBought() {
-		return _dateBought;
-	}
-
-	public void setDateBought(String dateBought) {
-		_dateBought = dateBought;
-	}
-
-	public String getDateSold() {
-		return _dateSold;
-	}
-
-	public void setDateSold(String dateSold) {
-		_dateSold = dateSold;
 	}
 
 	public String getStatus() {
@@ -315,14 +264,6 @@ public class Book {
 
 	public void setSubject(Subject subject) {
 		_subject = subject;
-	}
-
-	public List<Reference> getReferences() {
-		return _references;
-	}
-
-	public void setReferences(List<Reference> references) {
-		_references = references;
 	}
 
 	public List<Tag> getTags() {
@@ -348,6 +289,7 @@ public class Book {
 	public void setUrlRelative(String urlRelative) {
 		_urlRelative = urlRelative;
 	}
+
 
 
 	

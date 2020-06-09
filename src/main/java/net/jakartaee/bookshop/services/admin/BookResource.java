@@ -1,4 +1,4 @@
-package net.jakartaee.bookshop.services;
+package net.jakartaee.bookshop.services.admin;
 
 import java.util.List;
 
@@ -22,6 +22,7 @@ import net.jakartaee.bookshop.exceptions.NotDeletedException;
 import net.jakartaee.bookshop.exceptions.NotFoundException;
 import net.jakartaee.bookshop.model.Book;
 import net.jakartaee.bookshop.model.Book.SALE_STATUS;
+import net.jakartaee.bookshop.model.BookAdmin;
 import net.jakartaee.bookshop.model.Tag;
 
 
@@ -39,8 +40,8 @@ public class BookResource {
     public Response getBooks() {
     	ReferenceDAO rdao = new ReferenceDAO();
  		try {
-			List<Book> books = new BookDAO().getAllBooks();
-			for ( Book book : books ) {
+			List<BookAdmin> books = new BookDAO().getAllBooks();
+			for ( BookAdmin book : books ) {
 				book.setReferences( rdao.getBookReferences(book.getId()) );
 			}
 	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
@@ -55,7 +56,7 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBookById( @PathParam("bookId") Integer id) {
 		try {
-			Book book = new BookDAO().getBookById(id);
+			BookAdmin book = new BookDAO().getBookAdminById(id);
 			if ( book.getSubjectId() != null ) book.setSubject(new SubjectDAO().getSubjectById(book.getSubjectId()));
 			book.setReferences(new ReferenceDAO().getBookReferences(book.getId()) );
 			book.setTags( new TagDAO().getBookTags( book.getId()) );
@@ -72,9 +73,9 @@ public class BookResource {
     @GET
     @Path("{queryField}/{queryValue}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getBookById( @PathParam("queryField") String queryField,  @PathParam("queryValue") String queryValue) {
+    public Response getBookBySearch( @PathParam("queryField") String queryField,  @PathParam("queryValue") String queryValue) {
 		try {
-			List<Book> books = new BookDAO().getBooksByQueryField(queryField, queryValue);
+			List<BookAdmin> books = new BookDAO().getBooksByQueryField(queryField, queryValue);
 	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
 		} catch (NotFoundException e) {
 			return Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
@@ -87,7 +88,7 @@ public class BookResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addBook(Book book) {
+    public Response addBook(BookAdmin book) {
     	TagDAO tdao = new TagDAO();
     	try {
 			int bookId = new BookDAO().insertBook(book);
@@ -105,7 +106,7 @@ public class BookResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateBook(Book book) {
+    public Response updateBook(BookAdmin book) {
     	TagDAO tdao = new TagDAO();
     	try {
 			new BookDAO().updateBook(book);

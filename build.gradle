@@ -9,6 +9,7 @@ repositories {
 }
 
 dependencies {
+	
 	compile 'org.glassfish.jersey.containers:jersey-container-servlet:2.27'
 	compile 'org.glassfish.jersey.media:jersey-media-json-jackson:2.27'
 	compile 'org.glassfish.jersey.inject:jersey-hk2:2.27'

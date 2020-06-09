@@ -12,6 +12,7 @@ import net.jakartaee.bookshop.exceptions.DatabaseException;
 import net.jakartaee.bookshop.exceptions.NotDeletedException;
 import net.jakartaee.bookshop.exceptions.NotFoundException;
 import net.jakartaee.bookshop.model.Book;
+import net.jakartaee.bookshop.model.BookAdmin;
 
 
 public class BookDAO extends SQLiteDAO{
@@ -28,21 +29,50 @@ public class BookDAO extends SQLiteDAO{
 
 
 	
-	public List<Book> getAllBooks() throws DatabaseException{
+
+	public List<Book> getInventoryBooks() throws DatabaseException{
 		List<Book> books = new ArrayList<>();
+		String sql = SQL_GET_BOOKS_BY_FIELD + "status=?";
+		return getInventoryBooksByQuery(sql, Book.SALE_STATUS.LIST.toString(), false);
+	}
+	
+	public Book getInventoryBookById(Integer id) throws NotFoundException, DatabaseException{
+		Book book = null;
+		try(
+				Connection conn = SQLiteDatabase.getConnection();
+				PreparedStatement getPS = conn.prepareStatement(SQL_GET_BOOK_BY_ID);){
+			getPS.setInt( 	1, id);
+		
+			ResultSet rs = getPS.executeQuery();
+			if (!rs.next()) {
+				throw new NotFoundException("Book not found for id: " + id);
+			}
+			else {
+				book = new Book(rs);		
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException("getBookById was not successful.",e);
+		}
+		return book;
+	}
+	
+	
+	public List<BookAdmin> getAllBooks() throws DatabaseException{
+		List<BookAdmin> books = new ArrayList<>();
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement getPS = conn.prepareStatement(SQL_GET_ALL_BOOKS);){
 		
 			ResultSet rs = getPS.executeQuery();
 			while (rs.next()) {
-				books.add(new Book(rs));
+				books.add(new BookAdmin(rs));
 			}
 		} catch (SQLException e) {
 			throw new DatabaseException("getBooks was not successful.",e);
 		}
 		return books;
 	}
+
 	
 //	//public List<Book> getBooksByTags(List<Tag> tags) throws DatabaseException{
 //	public List<Book> getBooksByTags(Integer tagId) throws DatabaseException{
@@ -62,7 +92,7 @@ public class BookDAO extends SQLiteDAO{
 //		return books;
 //	}
 
-	public List<Book> getBooksByQueryField(String field, String value) throws DatabaseException{
+	public List<BookAdmin> getBooksByQueryField(String field, String value) throws DatabaseException{
 		// TODO: support other fields
 		boolean isLike = false;
 		String sql = null;
@@ -75,10 +105,28 @@ public class BookDAO extends SQLiteDAO{
 		else {
 			throw new DatabaseException("Query not supported for field: " + field);
 		}
-		return getBooksByQuery(sql, value, isLike);
+		return getAdminBooksByQuery(sql, value, isLike);
 	}
 
-	private List<Book> getBooksByQuery(String sql, String value, boolean isLike) throws DatabaseException{
+	private List<BookAdmin> getAdminBooksByQuery(String sql, String value, boolean isLike) throws DatabaseException{
+		List<BookAdmin> books = new ArrayList<>();
+		try(
+				Connection conn = SQLiteDatabase.getConnection();
+				PreparedStatement getPS = conn.prepareStatement(sql);){
+		
+			if ( isLike ) getPS.setString( 	1, "%" + value + "%");
+			else 		  getPS.setString( 	1, value);
+			
+			ResultSet rs = getPS.executeQuery();
+			while (rs.next()) {
+				books.add(new BookAdmin(rs));
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException("getBooks was not successful.",e);
+		}
+		return books;
+	}
+	private List<Book> getInventoryBooksByQuery(String sql, String value, boolean isLike) throws DatabaseException{
 		List<Book> books = new ArrayList<>();
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
@@ -97,8 +145,8 @@ public class BookDAO extends SQLiteDAO{
 		return books;
 	}
 	
-	public Book getBookById(Integer id) throws NotFoundException, DatabaseException{
-		Book book = null;
+	public BookAdmin getBookAdminById(Integer id) throws NotFoundException, DatabaseException{
+		BookAdmin book = null;
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement getPS = conn.prepareStatement(SQL_GET_BOOK_BY_ID);){
@@ -109,14 +157,16 @@ public class BookDAO extends SQLiteDAO{
 				throw new NotFoundException("Book not found for id: " + id);
 			}
 			else {
-				book = new Book(rs);		
+				book = new BookAdmin(rs);		
 			}
 		} catch (SQLException e) {
 			throw new DatabaseException("getBookById was not successful.",e);
 		}
 		return book;
 	}
-	public int insertBook(Book b) throws DatabaseException{
+	
+
+	public int insertBook(BookAdmin b) throws DatabaseException{
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement insertPS = conn.prepareStatement(SQL_INSERT_BOOK);){
@@ -139,9 +189,10 @@ public class BookDAO extends SQLiteDAO{
 			insertPS.setString( 11, b.getPages());
 //			if ( b.getPages() != null ) 		insertPS.setLong( 9, b.getPages()); 
 //			else 								insertPS.setNull( 9, java.sql.Types.INTEGER);
-			insertPS.setString( 12, b.getBinding());
-			insertPS.setString( 13, b.getCondition());
 			
+			// Atributes
+			insertPS.setString( 12, b.getBinding());
+			insertPS.setString( 13, b.getCondition());			
 			insertPS.setString( 14, b.getDetails());
 			insertPS.setString( 15, b.getContents());			
 			insertPS.setString( 16, b.getNotes());
@@ -158,7 +209,9 @@ public class BookDAO extends SQLiteDAO{
 			insertPS.setString( 21, b.getDateBought());
 			insertPS.setString( 22, b.getDateSold());
 			insertPS.setString(	23, b.getUrlRelative());
-			insertPS.setString(	24, b.getStatus());
+			insertPS.setString( 24, b.getRarity());
+			insertPS.setString( 25, b.getReprints());
+			insertPS.setString(	26, b.getStatus());
 			
 			int numRows = insertPS.executeUpdate();
 			int newId = getNewId(conn);
@@ -169,7 +222,7 @@ public class BookDAO extends SQLiteDAO{
 		}
 	}
 	
-	public void updateBook(Book b) throws DatabaseException{
+	public void updateBook(BookAdmin b) throws DatabaseException{
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement insertPS = conn.prepareStatement(SQL_UPDATE_BOOK);){
@@ -210,9 +263,11 @@ public class BookDAO extends SQLiteDAO{
 			insertPS.setString( 21, b.getDateBought());
 			insertPS.setString( 22, b.getDateSold());
 			insertPS.setString(	23, b.getUrlRelative());
-			insertPS.setString(	24, b.getStatus());
+			insertPS.setString( 24, b.getRarity());
+			insertPS.setString( 25, b.getReprints());
+			insertPS.setString(	26, b.getStatus());
 			
-			insertPS.setInt( 	25, b.getId());
+			insertPS.setInt( 	27, b.getId());
 			int success = insertPS.executeUpdate();
 
 		} catch (SQLException e) {

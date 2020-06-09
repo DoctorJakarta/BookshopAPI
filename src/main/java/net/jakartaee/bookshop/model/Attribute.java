@@ -9,6 +9,13 @@ public class Attribute {
 	public static final String SQL_INSERT_FIELDS = " ( name ) ";
 	public static final String SQL_INSERT_VALUES = " VALUES (?) ";
 	public static final String SQL_UPDATE_FIELDS = " name=? ";
+	
+	// Book model currently supports 
+	// getBinding
+	// getSize
+	// getCondition
+	// getRarity
+	// isReprinted
     
 	private int _id;
 	private String _name;	
