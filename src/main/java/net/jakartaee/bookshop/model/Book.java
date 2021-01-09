@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 //
 // The Book Model includes only fields that are returned in the PUBLIC API
 //
@@ -82,6 +84,9 @@ public class Book {
 	private Subject _subject;
 	
 	private List<Tag> _tags;
+	
+	@JsonIgnore						// This is a dummy variable that is created on-demand by getPriceStr		
+	public String _priceStr;
 
 	public Book() {} // This is required for jersey-media-json-jackson binding for the doPost (Book book)
 	
@@ -297,7 +302,11 @@ public class Book {
 	//
 	//
 	//
-	
+	@JsonIgnore							// This is a dummy method to prevent error when JSON comes back with this READ ONLY field
+	public void setPriceStr(String priceStr) {
+	}
+
+
 
 //	public boolean isSold() {
 //		return _sold;
