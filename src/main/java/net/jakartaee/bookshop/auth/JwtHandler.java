@@ -34,7 +34,7 @@ public class JwtHandler {
 	
 
 	public static final int JWT_ABSOLUTE_TIMEOUT_HOURS = 8;			// Hours to expire after initial login
-	public static final int JWT_ACCESS_TIMEOUT_MIN = 20;			// Minutes to expire after inactivity
+	public static final int JWT_ACCESS_TIMEOUT_MIN = 60;			// Minutes to expire after inactivity
 
 	public static final String AUTHZ_HEADER = "Authorization";
 	public static final int jstStart = "Bearer ".length();

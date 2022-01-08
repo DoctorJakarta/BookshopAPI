@@ -14,15 +14,15 @@ public class BookAdmin extends Book {
 	
 	private String _notes;
 
+	private String _rarity;
+	private String _reprints;
+	private List<Reference> _references;
+	
 	private Long _priceBought;
 	private Long _priceMin;
 	private Long _priceMax;
 	private String _dateBought;
 	private String _dateSold;
-	private String _rarity;
-	private String _reprints;
-	private List<Reference> _references;
-	
 
 	public BookAdmin() {
 	}
@@ -31,12 +31,12 @@ public class BookAdmin extends Book {
 		super(rs);
 		
 		_notes = rs.getString("notes");
+		_rarity = rs.getString("rarity");
+		_reprints = rs.getString("reprints");
 		_priceBought = Optional.ofNullable(rs.getBigDecimal("priceBought")).map(BigDecimal::longValue).orElse(null);
 		_priceMin = Optional.ofNullable(rs.getBigDecimal("priceMin")).map(BigDecimal::longValue).orElse(null);
 		_priceMax = Optional.ofNullable(rs.getBigDecimal("priceMax")).map(BigDecimal::longValue).orElse(null);
 		_dateBought = rs.getString("dateBought");
-		_rarity = rs.getString("rarity");
-		_reprints = rs.getString("reprints");
 		
 
 	}
@@ -117,6 +117,8 @@ public class BookAdmin extends Book {
 	public void setReferences(List<Reference> references) {
 		_references = references;
 	}
+	
+
 	
 
 }

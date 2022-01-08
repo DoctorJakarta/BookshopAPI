@@ -43,18 +43,16 @@ public class AuthzFilter implements ContainerRequestFilter {
 	// This is the INCOMING Request Filter
 	@Override
 	public void filter(ContainerRequestContext creq) throws WebApplicationException {
-		System.out.println("Filtering: " + creq);
+		//System.out.println("Filtering: " + creq);
 		
 		boolean isLoginLogout = creq.getUriInfo().getPath().contains("login");
 		if (isLoginLogout) return; // No further authZ is necessary if login
 
 			// "inventory" is the only public page
 		boolean isPublic = creq.getUriInfo().getPath().contains("inventory");
-		System.out.println("Got Public: " + isPublic);
+		//System.out.println("Got Public: " + isPublic);
 
 		if (isPublic) return; 														// No further authZ is necessary unless path includes authz/
-
-System.out.println("NOT PUBLIC");
 
 		try {
 			JwtHandler jwth = new JwtHandler();

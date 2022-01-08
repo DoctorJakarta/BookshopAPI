@@ -38,11 +38,13 @@ public class BookResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBooks() {
-    	ReferenceDAO rdao = new ReferenceDAO();
+    	// ReferenceDAO rdao = new ReferenceDAO();
+    	TagDAO tdao = new TagDAO();
  		try {
 			List<BookAdmin> books = new BookDAO().getAllBooks();
 			for ( BookAdmin book : books ) {
-				book.setReferences( rdao.getBookReferences(book.getId()) );
+				//book.setReferences( rdao.getBookReferences(book.getId()) );
+				book.setTags( tdao.getBookTags( book.getId()) );
 			}
 	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
@@ -115,6 +117,22 @@ public class BookResource {
 				tdao.insertBookTag(book.getId(), t.getId() );
 			}
 			return Response.ok(book, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }
+ 
+    @PUT
+    @Path("{updateField}/{updateValue}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response bulkUpdateBooks(@PathParam("updateField") String field, @PathParam("updateValue") String value, List<Integer> bookIds) {
+    	BookDAO bdao = new BookDAO();
+   	try {
+    	System.out.println("Bulk Updating ("+field+") field for bookIds: " + bookIds);
+    		bdao.bulkUpdateBookField(field, value, bookIds);
+			return Response.ok(null, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
 			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();

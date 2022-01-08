@@ -36,7 +36,6 @@ public class AttributeDAO extends SQLiteDAO{
 		} catch (SQLException e) {
 			throw new DatabaseException("getAttributes was not successful.",e);
 		}
-		System.out.println("Returning names: " + names);
 		return names;
 	}
 	

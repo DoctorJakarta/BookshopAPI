@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 //
 // The Book Model includes only fields that are returned in the PUBLIC API
@@ -49,12 +50,12 @@ public class Book {
 	
 																					// dateSold should also be onINSERT
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought, dateSold, status) ";
-	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, volume, size,  pages, binding, condition, details, contents, notes, price, priceBought, priceMin, priceMax, dateBought, dateSold, urlRelative, rarity, reprints, status) ";
+	public static final String SQL_INSERT_FIELDS = " ( subjectId, title, author, publisher, publisherPlace, year, edition, printing, volume, size,  pages, binding, condition, details, contents, notes, rarity, reprints, priceBought, priceMin, priceMax, priceList, salePercent, dateBought, dateSold, urlRelative, status) ";
 	//public static final String SQL_INSERT_FIELDS = " ( author, title, year, desc, comment, price, priceBought, priceMin, priceMax, dateBought) ";
-	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,  ? ) ";
+	public static final String SQL_INSERT_VALUES = " VALUES (?,?,?,?,?,  ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?, ?,?,?,?,?,  ?,? ) ";
 	
 																					// dateSold and isSold are not set regular UPDATE
-	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, volume=?, size=?, pages=?, binding=?, condition=?, details=?, contents=?, notes=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?, dateSold=?, urlRelative=?, rarity=?, reprints=?, status=? ";
+	public static final String SQL_UPDATE_FIELDS = " subjectId=?, title=?, author=?, publisher=?, publisherPlace=?, year=?, edition=?, printing=?, volume=?, size=?, pages=?, binding=?, condition=?, details=?, contents=?, notes=?,  rarity=?, reprints=?, priceBought=?, priceMin=?, priceMax=?, priceList=?, salePercent=?, dateBought=?, dateSold=?, urlRelative=?, status=? ";
 	//public static final String SQL_UPDATE_FIELDS = " authorId=?, title=?, year=?, desc=?, price=?, priceBought=?, priceMin=?, priceMax=?, dateBought=?";
     
 	private int _id;
@@ -75,11 +76,13 @@ public class Book {
 	private String _details;
 	private String _contents;
 	
-	private Long _price;
+	private Long _priceList;
+	
+	private int _salePercent;
+
 	private String _urlRelative;
 	
 	private String _status;
-
 	
 	private Subject _subject;
 	
@@ -111,10 +114,11 @@ public class Book {
 		_details = rs.getString("details");
 		_contents = rs.getString("contents");
 		 
-		_price = Optional.ofNullable(rs.getBigDecimal("price")).map(BigDecimal::longValue).orElse(null);
+		_priceList = Optional.ofNullable(rs.getBigDecimal("priceList")).map(BigDecimal::longValue).orElse(null);
 		
 		_urlRelative = rs.getString("urlRelative");
 		
+		_salePercent = rs.getInt("salePercent");
 		_status = rs.getString("status");
 
 	}
@@ -245,15 +249,15 @@ public class Book {
 
 
 	public Long getPrice() {
-		return _price;
+		if ( _priceList == null ) return null;
+		return (long) (_priceList - Math.ceil((_priceList * _salePercent)/100));			// Round discount up to nearest dollar
 	}
 	public String getPriceStr() {
-		return _price + ".00";
+		if ( _priceList == null ) return null;
+		return getPrice() + ".00";
 	}
 
-	public void setPrice(Long price) {
-		_price = price;
-	}
+
 
 	public String getStatus() {
 		return _status;
@@ -295,15 +299,33 @@ public class Book {
 		_urlRelative = urlRelative;
 	}
 
-
-
 	
+	
+
+	public Long getPriceList() {
+		return _priceList;
+	}
+
+	public void setPriceList(Long priceList) {
+		_priceList = priceList;
+	}
+
+	public int getSalePercent() {
+		return _salePercent;
+	}
+
+	public void setSalePercent(int salePercent) {
+		_salePercent = salePercent;
+	}
 
 	//
 	//
 	//
 	@JsonIgnore							// This is a dummy method to prevent error when JSON comes back with this READ ONLY field
 	public void setPriceStr(String priceStr) {
+	}
+	@JsonIgnore							// This is a dummy method to prevent error when JSON comes back with this READ ONLY field
+	public void setPrice(int price) {
 	}
 
 
@@ -313,5 +335,13 @@ public class Book {
 //	}
 
 	
+	//
+	// Derived attributes
+	//
+	
+	@JsonProperty							// This includes the derive field in the JSON output. 
+	public boolean onSale() {
+		return ( _salePercent > 0 ? true : false);
+	}
 	
 }

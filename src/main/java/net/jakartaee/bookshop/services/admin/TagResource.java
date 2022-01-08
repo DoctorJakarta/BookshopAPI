@@ -35,7 +35,7 @@ public class TagResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTags() {
-    	ReferenceDAO rdao = new ReferenceDAO();
+    	// ReferenceDAO rdao = new ReferenceDAO();
  		try {
 			List<Tag> tagList = new TagDAO().getAllTags();
 			//Map<String, Tag> tagMap = tagList.stream().collect(Collectors.toMap(Tag::getKey, item -> item));

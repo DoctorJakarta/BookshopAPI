@@ -38,13 +38,12 @@ public class AttributeResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAttributes() {
  		try {
- 			System.out.println("Getting Attributes");
-			List<Attribute> attributes = new AttributeDAO().getAttributeNames();
+ 			List<Attribute> attributes = new AttributeDAO().getAttributeNames();
 			DetailDAO ddao = new DetailDAO();
 			for ( Attribute attr : attributes) {
-	 			System.out.println("Getting Details");
+	 			//System.out.println("Getting Details");
 				List<Detail> details = ddao.getDetailsByAttributeId(attr.getId());
-	 			System.out.println("Got Details: " + details);				
+	 			//System.out.println("Got Details: " + details);				
 				attr.setDetails(details);				
 			}
 	        return Response.ok(attributes, MediaType.APPLICATION_JSON).build();

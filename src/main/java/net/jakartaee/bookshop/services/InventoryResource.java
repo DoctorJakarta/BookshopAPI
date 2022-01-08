@@ -24,12 +24,13 @@ public class InventoryResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBooks() {
-    	ReferenceDAO rdao = new ReferenceDAO();
+    	//ReferenceDAO rdao = new ReferenceDAO();
+    	TagDAO tdao = new TagDAO();
  		try {
 			List<Book> books = new BookDAO().getInventoryBooks();
-//			for ( Book book : books ) {
-//				book.setReferences( rdao.getBookReferences(book.getId()) );
-//			}
+			for ( Book book : books ) {
+				book.setTags( tdao.getBookTags( book.getId()) );
+			}
 	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
