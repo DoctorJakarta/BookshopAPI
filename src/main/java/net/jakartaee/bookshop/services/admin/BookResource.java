@@ -86,7 +86,25 @@ public class BookResource {
 			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
 		}
     }   
-    
+   
+    @GET
+    @Path("sale")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getSaleBooks() {
+    	// ReferenceDAO rdao = new ReferenceDAO();
+    	TagDAO tdao = new TagDAO();
+ 		try {
+			List<BookAdmin> books = new BookDAO().getSaleBooks();
+			for ( BookAdmin book : books ) {
+				//book.setReferences( rdao.getBookReferences(book.getId()) );
+				book.setTags( tdao.getBookTags( book.getId()) );
+			}
+	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }   
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

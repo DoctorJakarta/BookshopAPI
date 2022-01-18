@@ -19,6 +19,7 @@ import net.jakartaee.bookshop.model.BookAdmin;
 public class BookDAO extends SQLiteDAO{
 	private static final String SQL_GET_ALL_BOOKS = "SELECT * FROM book ORDER BY year";
 	private static final String SQL_GET_BOOKS_BY_FIELD = "SELECT * FROM book WHERE ";
+	private static final String SQL_GET_SALE_BOOKS = "SELECT * FROM book WHERE salePercent > 0 ORDER BY salePercent";
 	
 	//SELECT * FROM book JOIN xref_book_tag USING (bookId) JOIN tag USING (tagId) WHERE tag.name = "Science";
 			
@@ -78,7 +79,21 @@ public class BookDAO extends SQLiteDAO{
 		return books;
 	}
 
-	
+	public List<BookAdmin> getSaleBooks() throws DatabaseException{
+		List<BookAdmin> books = new ArrayList<>();
+		try(
+				Connection conn = SQLiteDatabase.getConnection();
+				PreparedStatement getPS = conn.prepareStatement(SQL_GET_SALE_BOOKS);){
+		
+			ResultSet rs = getPS.executeQuery();
+			while (rs.next()) {
+				books.add(new BookAdmin(rs));
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException("getBooks was not successful.",e);
+		}
+		return books;
+	}	
 //	//public List<Book> getBooksByTags(List<Tag> tags) throws DatabaseException{
 //	public List<Book> getBooksByTags(Integer tagId) throws DatabaseException{
 //		List<Book> books = new ArrayList<>();

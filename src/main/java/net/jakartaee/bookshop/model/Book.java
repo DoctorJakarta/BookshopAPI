@@ -79,6 +79,7 @@ public class Book {
 	private Long _priceList;
 	
 	private int _salePercent;
+	private String _dateSold;
 
 	private String _urlRelative;
 	
@@ -115,10 +116,11 @@ public class Book {
 		_contents = rs.getString("contents");
 		 
 		_priceList = Optional.ofNullable(rs.getBigDecimal("priceList")).map(BigDecimal::longValue).orElse(null);
+		_salePercent = rs.getInt("salePercent");
 		
 		_urlRelative = rs.getString("urlRelative");
 		
-		_salePercent = rs.getInt("salePercent");
+		_dateSold = rs.getString("dateSold");
 		_status = rs.getString("status");
 
 	}
@@ -248,13 +250,12 @@ public class Book {
 	}
 
 
-	public Long getPrice() {
-		if ( _priceList == null ) return null;
-		return (long) (_priceList - Math.ceil((_priceList * _salePercent)/100));			// Round discount up to nearest dollar
+	public String getDateSold() {
+		return _dateSold;
 	}
-	public String getPriceStr() {
-		if ( _priceList == null ) return null;
-		return getPrice() + ".00";
+
+	public void setDateSold(String dateSold) {
+		_dateSold = dateSold;
 	}
 
 
@@ -344,4 +345,16 @@ public class Book {
 		return ( _salePercent > 0 ? true : false);
 	}
 	
+	@JsonProperty							// This includes the derive field in the JSON output. 
+	public Long price() {
+		if ( _priceList == null ) return null;
+		return (long) (_priceList - Math.ceil((_priceList * _salePercent)/100));			// Round discount up to nearest dollar
+	}
+	
+	@JsonProperty							// This includes the derive field in the JSON output. 
+	public String priceStr() {
+		if ( _priceList == null ) return null;
+		return price() + ".00";
+	}
+
 }

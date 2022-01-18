@@ -22,7 +22,6 @@ public class BookAdmin extends Book {
 	private Long _priceMin;
 	private Long _priceMax;
 	private String _dateBought;
-	private String _dateSold;
 
 	public BookAdmin() {
 	}
@@ -84,14 +83,6 @@ public class BookAdmin extends Book {
 
 	public void setDateBought(String dateBought) {
 		_dateBought = dateBought;
-	}
-
-	public String getDateSold() {
-		return _dateSold;
-	}
-
-	public void setDateSold(String dateSold) {
-		_dateSold = dateSold;
 	}
 
 	public String getRarity() {
