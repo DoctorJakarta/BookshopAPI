@@ -11,16 +11,16 @@ public class Source {
 	private int _id;
 	private String _title;
 	private String _author;
-	private Integer _year;
+	private String _year;
 	private String _details;
 
 	public Source() {} // This is required for jersey-media-json-jackson binding for the doPost (Book book)
 
 	public Source(ResultSet rs) throws SQLException {
-		_id =  rs.getInt("subjectId");
+		_id =  rs.getInt("sourceId");
 		_title =  rs.getString("title");
 		_author =  rs.getString("author");
-		_year = (Integer) rs.getObject("year");
+		_year = rs.getString("year");
 		_details = rs.getString("details");
 	}
 	
@@ -52,11 +52,11 @@ public class Source {
 		_author = author;
 	}
 
-	public Integer getYear() {
+	public String getYear() {
 		return _year;
 	}
 
-	public void setYear(Integer year) {
+	public void setYear(String year) {
 		_year = year;
 	}
 

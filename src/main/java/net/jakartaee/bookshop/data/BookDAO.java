@@ -202,8 +202,11 @@ public class BookDAO extends SQLiteDAO{
 			insertPS.setString( 3, b.getAuthor());
 			insertPS.setString( 4, b.getPublisher());
 			insertPS.setString( 5, b.getPublisherPlace());
-
-			insertPS.setInt( 	6, b.getYear());
+			
+			//insertPS.setInt( 	6, b.getYear());
+			if ( b.getYear() != null ) 		insertPS.setLong( 9, b.getYear()); 
+			else 							insertPS.setNull( 9, java.sql.Types.INTEGER);
+			
 			insertPS.setString( 7, b.getEdition());
 			insertPS.setString( 8, b.getPrinting());
 			insertPS.setString( 9, b.getVolume());
@@ -287,7 +290,10 @@ public class BookDAO extends SQLiteDAO{
 			updatePS.setString( 4, b.getPublisher());
 			updatePS.setString( 5, b.getPublisherPlace());
 
-			updatePS.setInt( 	6, b.getYear());
+			//updatePS.setLong( 	6, b.getYear());
+			if ( b.getYear() != null ) 		updatePS.setLong( 6, b.getYear()); 
+			else 							updatePS.setNull( 6, java.sql.Types.INTEGER);
+
 			updatePS.setString( 7, b.getEdition());
 			updatePS.setString( 8, b.getPrinting());
 			updatePS.setString( 9, b.getVolume());

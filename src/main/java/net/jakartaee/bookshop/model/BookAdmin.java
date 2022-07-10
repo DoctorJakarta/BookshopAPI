@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 //
 //The BookAdmin Model includes additional fields that are returned in the ADMIN API
 //
@@ -22,6 +24,9 @@ public class BookAdmin extends Book {
 	private Long _priceMin;
 	private Long _priceMax;
 	private String _dateBought;
+
+	@JsonIgnore						// This is a dummy variable that is created on-demand by getPriceStr		
+	public String onSale;
 
 	public BookAdmin() {
 	}

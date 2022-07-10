@@ -3,8 +3,10 @@ package net.jakartaee.bookshop.services.admin;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -102,52 +104,46 @@ public class PlateResource {
 			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
 		}
     }
-//
-//    @PUT
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response updateBook(BookAdmin book) {
-//    	TagDAO tdao = new TagDAO();
-//    	try {
-//			new BookDAO().updateBook(book);
-//			tdao.deleteBookTags(book.getId());
-//			for ( Tag t: book.getTags() ) {				
-//				tdao.insertBookTag(book.getId(), t.getId() );
-//			}
-//			return Response.ok(book, MediaType.APPLICATION_JSON).build();
-//		} catch (DatabaseException e) {
-//			e.printStackTrace();
-//			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
-//		}
-//    }
-// 
-//    @PUT
-//    @Path("{updateField}/{updateValue}")
-//    @Consumes(MediaType.APPLICATION_JSON)
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response bulkUpdateBooks(@PathParam("updateField") String field, @PathParam("updateValue") String value, List<Integer> bookIds) {
-//    	BookDAO bdao = new BookDAO();
-//   	try {
-//    	System.out.println("Bulk Updating ("+field+") field for bookIds: " + bookIds);
-//    		bdao.bulkUpdateBookField(field, value, bookIds);
-//			return Response.ok(null, MediaType.APPLICATION_JSON).build();
-//		} catch (DatabaseException e) {
-//			e.printStackTrace();
-//			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
-//		}
-//    }
-//    
-//    @DELETE
-//    @Path("{bookId}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response deleteBookById( @PathParam("bookId") Integer id) {
-//		try {
-//			new BookDAO().deleteBook(id);
-//	        return Response.ok(null, MediaType.APPLICATION_JSON).build();
-//		} catch (DatabaseException e) {
-//			e.printStackTrace();
-//			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
-//		}
-//    }   
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateBook(Plate plate) {
+    	try {
+			new PlateDAO().updatePlate(plate);
+			return Response.ok(plate, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }
+ 
+    @PUT
+    @Path("{updateField}/{updateValue}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response bulkUpdateBooks(@PathParam("updateField") String field, @PathParam("updateValue") String value, List<Integer> plateIds) {
+   	try {
+    	System.out.println("Bulk Updating ("+field+") field for plateIds: " + plateIds);
+    		new PlateDAO().bulkUpdatePlateField(field, value, plateIds);
+			return Response.ok(null, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }
+    
+    @DELETE
+    @Path("{plateId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteBookById( @PathParam("plateId") Integer id) {
+		try {
+			new PlateDAO().deletePlate(id);
+	        return Response.ok(null, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }   
     
 }

@@ -222,16 +222,18 @@ public class PlateDAO extends SQLiteDAO{
 	public void bulkUpdatePlateField(String field, String status, List<Integer> plateIds) throws DatabaseException{
 		switch(field) {				// Prevent SQLi by only allowing known field names
 			case "status":
+			case "priceList":
 			case "salePercent":
 				bulkUpdatePlates(field, status, plateIds);
-				break;		
+				break;	
+			default: throw new DatabaseException("Update unsuccessful. Not configured to bulk update: " + field);
 		}
 	}
 	
 	private void bulkUpdatePlates(String field, String status, List<Integer> plateIds) throws DatabaseException{
 		final String idSQL = plateIds.toString().replace("[","(").replace("]",")");				// UPDATE plate SET status= 'HOLD' WHERE plateId in (67, 62)
 		final String sql = "UPDATE plate SET " + field + "= ? WHERE plateId in " + idSQL;
-		System.out.println("Running bulk update SQL: " + sql);
+		//System.out.println("Running bulk update SQL: " + sql);
 		try(
 				Connection conn = SQLiteDatabase.getConnection();
 				PreparedStatement updatePS = conn.prepareStatement(sql);){

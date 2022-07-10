@@ -37,58 +37,58 @@ public class SizeDAO extends SQLiteDAO{
 		return sizes;
 	}
 	
-	public Size getSizeById(Integer id) throws NotFoundException, DatabaseException{
-		Size size = null;
-		try(
-				Connection conn = SQLiteDatabase.getConnection();
-				PreparedStatement getPS = conn.prepareStatement(SQL_GET_SIZE);){
-			getPS.setInt( 	1, id);
-		
-			ResultSet rs = getPS.executeQuery();
-			if (!rs.next()) {
-				throw new NotFoundException("Size not found for id: " + id);
-			}
-			else {
-				size = new Size(rs);		
-			}
-		} catch (SQLException e) {
-			throw new DatabaseException("getSizeById was not successful.",e);
-		}
-		return size;
-	}
-	
-	public void insertSize(Size b) throws DatabaseException{
-		try(
-				Connection conn = SQLiteDatabase.getConnection();
-				PreparedStatement insertPS = conn.prepareStatement(SQL_INSERT_SIZE);){
-		
-			//insertPS.setString( 1, b.getKey());
-			insertPS.setString( 1, b.getDimensions());
-
-			
-			int numRows = insertPS.executeUpdate();
-			//int newId = getNewId(conn);
-			//return newId;
-
-		} catch (SQLException e) {
-			throw new DatabaseException("Insert Size was not successful.",e);
-		}
-	}
-
-	public void deleteSize(Integer id) throws NotDeletedException, DatabaseException {
-		try(
-				Connection conn = SQLiteDatabase.getConnection();
-				PreparedStatement delPS = conn.prepareStatement(SQL_DELETE_SIZE);){
-			
-			delPS.setInt( 	1, id);
-		
-			if ( delPS.executeUpdate() == 0 ) {
-				throw new NotDeletedException("Size not deleted for id: " + id);
-			}
-		} catch (SQLException e) {
-			throw new DatabaseException("Delete Size was not successful.",e);
-		}
-	}
-	
+//	public Size getSizeById(Integer id) throws NotFoundException, DatabaseException{
+//		Size size = null;
+//		try(
+//				Connection conn = SQLiteDatabase.getConnection();
+//				PreparedStatement getPS = conn.prepareStatement(SQL_GET_SIZE);){
+//			getPS.setInt( 	1, id);
+//		
+//			ResultSet rs = getPS.executeQuery();
+//			if (!rs.next()) {
+//				throw new NotFoundException("Size not found for id: " + id);
+//			}
+//			else {
+//				size = new Size(rs);		
+//			}
+//		} catch (SQLException e) {
+//			throw new DatabaseException("getSizeById was not successful.",e);
+//		}
+//		return size;
+//	}
+//	
+//	public void insertSize(Size b) throws DatabaseException{
+//		try(
+//				Connection conn = SQLiteDatabase.getConnection();
+//				PreparedStatement insertPS = conn.prepareStatement(SQL_INSERT_SIZE);){
+//		
+//			//insertPS.setString( 1, b.getKey());
+//			insertPS.setString( 1, b.getDimensions());
+//
+//			
+//			int numRows = insertPS.executeUpdate();
+//			//int newId = getNewId(conn);
+//			//return newId;
+//
+//		} catch (SQLException e) {
+//			throw new DatabaseException("Insert Size was not successful.",e);
+//		}
+//	}
+//
+//	public void deleteSize(Integer id) throws NotDeletedException, DatabaseException {
+//		try(
+//				Connection conn = SQLiteDatabase.getConnection();
+//				PreparedStatement delPS = conn.prepareStatement(SQL_DELETE_SIZE);){
+//			
+//			delPS.setInt( 	1, id);
+//		
+//			if ( delPS.executeUpdate() == 0 ) {
+//				throw new NotDeletedException("Size not deleted for id: " + id);
+//			}
+//		} catch (SQLException e) {
+//			throw new DatabaseException("Delete Size was not successful.",e);
+//		}
+//	}
+//	
 
 }

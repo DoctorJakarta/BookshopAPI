@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.jakartaee.bookshop.data.BookDAO;
+import net.jakartaee.bookshop.data.PlateDAO;
 import net.jakartaee.bookshop.data.ReferenceDAO;
 import net.jakartaee.bookshop.data.SubjectDAO;
 import net.jakartaee.bookshop.data.TagDAO;
@@ -17,11 +18,13 @@ import net.jakartaee.bookshop.exceptions.DatabaseException;
 import net.jakartaee.bookshop.exceptions.NotFoundException;
 import net.jakartaee.bookshop.model.Book;
 import net.jakartaee.bookshop.model.BookAdmin;
+import net.jakartaee.bookshop.model.Plate;
 import net.jakartaee.bookshop.model.Book.SALE_STATUS;
 
 @Path("inventory")
 public class InventoryResource {
     @GET
+    @Path("book")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBooks() {
     	//ReferenceDAO rdao = new ReferenceDAO();
@@ -37,7 +40,19 @@ public class InventoryResource {
 			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
 		}
     }
-    
+  
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("plate")
+    public Response getPlates() {
+  		try {
+			List<Plate> plates = new PlateDAO().getInventoryPlates();
+	        return Response.ok(plates, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }
 //    @GET
 //    @Path("{queryField}/{queryValue}")
 //    @Produces(MediaType.APPLICATION_JSON)

@@ -34,7 +34,7 @@ public class Book {
 	// The SALE_STATUS enum is only necessary for if/else checking 
 	// Ex: if ( book.getStatus().equals(STATUS.SOLD)) 
 	//
-	public static enum SALE_STATUS{ PREP, REPAIR, LIST, SALE, HOLD, KEEP, SOLD, NONE;
+	public static enum SALE_STATUS{ PREP, REPAIR, INQUIRE, LIST, SALE, HOLD, KEEP, SOLD, NONE;
 	      public static SALE_STATUS get(String sStatus){
 	      for (SALE_STATUS status : values()) {
 	      //System.out.println("Checking STATUS name ("+status.name()+" equals: " + sStatus);
@@ -64,7 +64,7 @@ public class Book {
 	private String _title;
 	private String _publisher;
 	private String _publisherPlace;
-	private int _year;
+	private Long _year;						// Not used for sorting like books. Can be a span 1810-1820
 	private String _edition;
 	private String _printing;
 	private String _volume;
@@ -90,7 +90,7 @@ public class Book {
 	private List<Tag> _tags;
 	
 	@JsonIgnore						// This is a dummy variable that is created on-demand by getPriceStr		
-	public String _priceStr;
+	public String priceStr;
 
 	public Book() {} // This is required for jersey-media-json-jackson binding for the doPost (Book book)
 	
@@ -102,7 +102,8 @@ public class Book {
 		
 		_publisher = rs.getString("publisher");
 		_publisherPlace = rs.getString("publisherPlace");
-		_year = rs.getInt("year");
+		_year = Optional.ofNullable(rs.getBigDecimal("year")).map(BigDecimal::longValue).orElse(null);;
+		//_year = rs.getString("year");
 		_edition = rs.getString("edition");
 		_printing = rs.getString("printing");
 		_volume = rs.getString("volume");
@@ -177,17 +178,26 @@ public class Book {
 		_publisherPlace = publisherPlace;
 	}
 
-	public int getYear() {
+//	public String getYear() {
+//		return _year;
+//	}
+//
+//	public void setYear(String year) {
+//		_year = year;
+//	}
+
+	public Long getYear() {
 		return _year;
 	}
 
-	public void setYear(int year) {
+	public void setYear(Long year) {
 		_year = year;
 	}
-
+	
 	public String getEdition() {
 		return _edition;
 	}
+
 
 	public void setEdition(String edition) {
 		_edition = edition;

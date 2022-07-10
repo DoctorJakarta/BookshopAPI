@@ -52,7 +52,9 @@ public class Plate {
 	private Source _source;
 	
 	@JsonIgnore						// This is a dummy variable that is created on-demand by getPriceStr		
-	public String _priceStr;
+	public String priceStr;
+	@JsonIgnore						// This is a dummy variable that is created on-demand by getPriceStr		
+	public String onSale;
 
 	public Plate() {} // This is required for jersey-media-json-jackson binding for the doPost (Plate plate)
 	
@@ -174,11 +176,6 @@ public class Plate {
 
 	public void setStatus(String status) {
 		_status = status;
-	}
-
-
-	public String getPriceStr() {
-		return _priceStr;
 	}
 
 	//
