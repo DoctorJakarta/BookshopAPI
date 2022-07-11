@@ -34,7 +34,7 @@ public class Book {
 	// The SALE_STATUS enum is only necessary for if/else checking 
 	// Ex: if ( book.getStatus().equals(STATUS.SOLD)) 
 	//
-	public static enum SALE_STATUS{ PREP, REPAIR, INQUIRE, LIST, SALE, HOLD, KEEP, SOLD, NONE;
+	public static enum SALE_STATUS{ PREP, REPAIR, INQUIRE, PRICED, SALE, HOLD, KEEP, SOLD, NONE;
 	      public static SALE_STATUS get(String sStatus){
 	      for (SALE_STATUS status : values()) {
 	      //System.out.println("Checking STATUS name ("+status.name()+" equals: " + sStatus);

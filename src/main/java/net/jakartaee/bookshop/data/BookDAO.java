@@ -37,9 +37,22 @@ public class BookDAO extends SQLiteDAO{
 
 	public List<Book> getInventoryBooks() throws DatabaseException{
 		List<Book> books = new ArrayList<>();
-		String sql = SQL_GET_BOOKS_BY_FIELD + "status=?";
-		sql += " ORDER BY year";		
-		return getInventoryBooksByQuery(sql, Book.SALE_STATUS.LIST.toString(), false);
+//		String sql = SQL_GET_BOOKS_BY_FIELD + "status=?";
+//		sql += " ORDER BY year";		
+//		return getInventoryBooksByQuery(sql, Book.SALE_STATUS.PRICED.toString(), false);
+		String sql = SQL_GET_BOOKS_BY_FIELD + " status='" + SALE_STATUS.INQUIRE + "' OR status='" + SALE_STATUS.PRICED +"'";
+		try(
+				Connection conn = SQLiteDatabase.getConnection();
+				PreparedStatement getPS = conn.prepareStatement(sql);){
+		
+			ResultSet rs = getPS.executeQuery();
+			while (rs.next()) {
+				books.add(new Book(rs));
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException("getInventoryBooks was not successful.",e);
+		}
+		return books;
 	}
 	
 	public Book getInventoryBookById(Integer id) throws NotFoundException, DatabaseException{
