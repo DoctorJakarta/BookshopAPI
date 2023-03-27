@@ -20,11 +20,15 @@ public class BookDAO extends SQLiteDAO{
 	private static final String SQL_GET_ALL_BOOKS = "SELECT * FROM book ORDER BY year";
 	private static final String SQL_GET_BOOKS_BY_FIELD = "SELECT * FROM book WHERE ";
 	private static final String SQL_GET_SALE_BOOKS = "SELECT * FROM book WHERE salePercent > 0 ORDER BY salePercent";
-	
+	//private static final String SQL_GET_LISTED_BOOKS = "SELECT * FROM book AS b INNER JOIN xref_book_listing AS x ON b.bookId=x.bookId order by year, bookId";
+	private static final String SQL_GET_LISTED_BOOK_IDS = "SELECT DISTINCT bookId FROM ( SELECT * FROM book AS b INNER JOIN xref_book_listing AS x ON b.bookId=x.bookId order by year, bookId )";
+	private static final String SQL_GET_LISTED_BOOK_IDS_BY_SITE_ID = "SELECT DISTINCT bookId FROM ( SELECT * FROM book AS b INNER JOIN xref_book_listing AS x ON b.bookId=x.bookId WHERE x.listingId=? order by year, bookId )";
+			
 	//SELECT * FROM book JOIN xref_book_tag USING (bookId) JOIN tag USING (tagId) WHERE tag.name = "Science";
 			
 	//private static final String SQL_GET_BOOKS = "SELECT * FROM book JOIN xref_book_tag USING (bookId) JOIN tag USING (tagKey) ";
 	private static final String SQL_GET_BOOKS_BY_TAG = "SELECT * FROM book JOIN xref_book_tag USING (bookId) JOIN tag USING (tagId) WHERE tag.name=?" ;
+	private static final String SQL_GET_BOOKS_BY_LISTING = "SELECT * FROM book JOIN xref_book_listing USING (bookId) JOIN listing USING (listingId) WHERE listing.name=?" ;
 
 	//private static final String SQL_GET_BOOK_BY_ID = "SELECT * FROM book LEFT JOIN subject USING (subjectId) WHERE bookId=?";
 	private static final String SQL_GET_BOOK_BY_ID = "SELECT * FROM book WHERE bookId=?";
@@ -107,6 +111,61 @@ public class BookDAO extends SQLiteDAO{
 		}
 		return books;
 	}	
+	
+	public List<BookAdmin> getListedBooks() throws DatabaseException{
+		List<BookAdmin> books = new ArrayList<>();
+		List<Integer> listedBookIds = getListedBookIds();
+		for ( Integer bookId : listedBookIds ) {
+			books.add(getBookAdminById(bookId));
+		}
+		return books;
+	}	
+	
+	private List<Integer> getListedBookIds() throws DatabaseException{
+		List<Integer> bookIds = new ArrayList<>();
+		try(
+				Connection conn = SQLiteDatabase.getConnection();
+				PreparedStatement getPS = conn.prepareStatement(SQL_GET_LISTED_BOOK_IDS);){
+		
+			ResultSet rs = getPS.executeQuery();
+			
+			while (rs.next()) {			
+				bookIds.add(new Integer(rs.getInt("bookId")));
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException("getBookIds was not successful.",e);
+		}
+		return bookIds;
+	}	
+	
+	
+	public List<BookAdmin> getListedBooksBySite(int siteId) throws DatabaseException{
+		List<BookAdmin> books = new ArrayList<>();
+		List<Integer> listedBookIds = getListedBookIdsBySite(siteId);
+		for ( Integer bookId : listedBookIds ) {
+			books.add(getBookAdminById(bookId));
+		}
+		return books;
+	}	
+	
+	private List<Integer> getListedBookIdsBySite(int siteId) throws DatabaseException{
+		List<Integer> bookIds = new ArrayList<>();
+		try(
+				Connection conn = SQLiteDatabase.getConnection();
+				PreparedStatement getPS = conn.prepareStatement(SQL_GET_LISTED_BOOK_IDS_BY_SITE_ID);){
+		
+			getPS.setInt( 	1, siteId);
+			ResultSet rs = getPS.executeQuery();
+			
+			while (rs.next()) {			
+				bookIds.add(new Integer(rs.getInt("bookId")));
+			}
+		} catch (SQLException e) {
+			throw new DatabaseException("getBookIds was not successful.",e);
+		}
+		return bookIds;
+	}	
+	
 //	//public List<Book> getBooksByTags(List<Tag> tags) throws DatabaseException{
 //	public List<Book> getBooksByTags(Integer tagId) throws DatabaseException{
 //		List<Book> books = new ArrayList<>();
@@ -132,6 +191,7 @@ public class BookDAO extends SQLiteDAO{
 		if 		( "year".equals(field))   sql = SQL_GET_BOOKS_BY_FIELD + "year=?";
 		else if ( "status".equals(field)) sql = SQL_GET_BOOKS_BY_FIELD + "status=?";
 		else if ( "tag".equals(field))  sql = SQL_GET_BOOKS_BY_TAG;
+		else if ( "listing".equals(field))  sql = SQL_GET_BOOKS_BY_LISTING;
 		else if ( "author".equals(field)) { 
 			sql = SQL_GET_BOOKS_BY_FIELD + "author LIKE ?";
 			isLike = true;

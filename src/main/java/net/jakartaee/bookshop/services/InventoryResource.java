@@ -10,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.jakartaee.bookshop.data.BookDAO;
+import net.jakartaee.bookshop.data.ListingDAO;
 import net.jakartaee.bookshop.data.PlateDAO;
 import net.jakartaee.bookshop.data.ReferenceDAO;
 import net.jakartaee.bookshop.data.SubjectDAO;
@@ -28,11 +29,11 @@ public class InventoryResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBooks() {
     	//ReferenceDAO rdao = new ReferenceDAO();
-    	TagDAO tdao = new TagDAO();
  		try {
 			List<Book> books = new BookDAO().getInventoryBooks();
 			for ( Book book : books ) {
-				book.setTags( tdao.getBookTags( book.getId()) );
+				book.setTags( new TagDAO().getBookTags( book.getId()) );
+				book.setListings( new ListingDAO().getBookListings( book.getId()) );
 			}
 	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
@@ -77,6 +78,7 @@ public class InventoryResource {
 			if ( book.getSubjectId() != null ) book.setSubject(new SubjectDAO().getSubjectById(book.getSubjectId()));
 			//book.setReferences(new ReferenceDAO().getBookReferences(book.getId()) );
 			book.setTags( new TagDAO().getBookTags( book.getId()) );
+			book.setListings( new ListingDAO().getBookListings( book.getId()) );
 			System.out.println("Got book on SHELF: " + ( book.getStatus().equals(SALE_STATUS.SOLD)));
 	        return Response.ok(book, MediaType.APPLICATION_JSON).build();
 		} catch (NotFoundException e) {

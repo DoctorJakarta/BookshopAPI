@@ -14,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import net.jakartaee.bookshop.data.BookDAO;
+import net.jakartaee.bookshop.data.ListingDAO;
 import net.jakartaee.bookshop.data.ReferenceDAO;
 import net.jakartaee.bookshop.data.SubjectDAO;
 import net.jakartaee.bookshop.data.TagDAO;
@@ -24,6 +25,7 @@ import net.jakartaee.bookshop.model.Book;
 import net.jakartaee.bookshop.model.Book.SALE_STATUS;
 import net.jakartaee.bookshop.model.BookAdmin;
 import net.jakartaee.bookshop.model.Tag;
+import net.jakartaee.bookshop.model.Listing;
 
 
 @Path("book")
@@ -39,12 +41,12 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getBooks() {
     	// ReferenceDAO rdao = new ReferenceDAO();
-    	TagDAO tdao = new TagDAO();
  		try {
 			List<BookAdmin> books = new BookDAO().getAllBooks();
 			for ( BookAdmin book : books ) {
 				//book.setReferences( rdao.getBookReferences(book.getId()) );
-				book.setTags( tdao.getBookTags( book.getId()) );
+				book.setTags( new TagDAO().getBookTags( book.getId()) );
+				book.setListings( new ListingDAO().getBookListings( book.getId()) );
 			}
 	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
@@ -62,6 +64,7 @@ public class BookResource {
 			if ( book.getSubjectId() != null ) book.setSubject(new SubjectDAO().getSubjectById(book.getSubjectId()));
 			book.setReferences(new ReferenceDAO().getBookReferences(book.getId()) );
 			book.setTags( new TagDAO().getBookTags( book.getId()) );
+			book.setListings( new ListingDAO().getBookListings( book.getId()) );
 			System.out.println("Got book on SHELF: " + ( book.getStatus().equals(SALE_STATUS.SOLD)));
 	        return Response.ok(book, MediaType.APPLICATION_JSON).build();
 		} catch (NotFoundException e) {
@@ -92,12 +95,12 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSaleBooks() {
     	// ReferenceDAO rdao = new ReferenceDAO();
-    	TagDAO tdao = new TagDAO();
- 		try {
+  		try {
 			List<BookAdmin> books = new BookDAO().getSaleBooks();
 			for ( BookAdmin book : books ) {
 				//book.setReferences( rdao.getBookReferences(book.getId()) );
-				book.setTags( tdao.getBookTags( book.getId()) );
+				book.setTags( new TagDAO().getBookTags( book.getId()) );
+				book.setListings( new ListingDAO().getBookListings( book.getId()) );
 			}
 	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
@@ -105,17 +108,56 @@ public class BookResource {
 			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
 		}
     }   
+    
+    @GET
+    @Path("listed")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListedBooks() {
+    	// ReferenceDAO rdao = new ReferenceDAO();
+  		try {
+			List<BookAdmin> books = new BookDAO().getListedBooks();
+			for ( BookAdmin book : books ) {
+				book.setTags( new TagDAO().getBookTags( book.getId()) );
+				book.setListings( new ListingDAO().getBookListings( book.getId()) );
+			}
+	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }   
+    
+    @GET
+    @Path("listed/{siteId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getListedBooksBySite(@PathParam("siteId") Integer siteId) {
+    	// ReferenceDAO rdao = new ReferenceDAO();
+  		try {
+			List<BookAdmin> books = new BookDAO().getListedBooksBySite(siteId);
+			for ( BookAdmin book : books ) {
+				book.setTags( new TagDAO().getBookTags( book.getId()) );
+				book.setListings( new ListingDAO().getBookListings( book.getId()) );
+			}
+	        return Response.ok(books, MediaType.APPLICATION_JSON).build();
+		} catch (DatabaseException e) {
+			e.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).type(MediaType.APPLICATION_JSON).entity(e.getErrorResponse()).build();
+		}
+    }     
+    
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response addBook(BookAdmin book) {
-    	TagDAO tdao = new TagDAO();
-    	try {
+     	try {
 			int bookId = new BookDAO().insertBook(book);
 			book.setId(bookId);
 			for ( Tag t: book.getTags() ) {				
-				tdao.insertBookTag(book.getId(), t.getId() );
-			}			
+				new TagDAO().insertBookTag(book.getId(), t.getId() );
+			}	
+			for ( Listing l: book.getListings() ) {				
+				new ListingDAO().insertBookListing(book.getId(), l.getId() );
+			}
 			return Response.ok(book, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {
 			e.printStackTrace();
@@ -128,11 +170,16 @@ public class BookResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateBook(BookAdmin book) {
     	TagDAO tdao = new TagDAO();
+    	ListingDAO ldao = new ListingDAO();
     	try {
 			new BookDAO().updateBook(book);
 			tdao.deleteBookTags(book.getId());
 			for ( Tag t: book.getTags() ) {				
 				tdao.insertBookTag(book.getId(), t.getId() );
+			}
+			ldao.deleteBookListings(book.getId());
+			for ( Listing l: book.getListings() ) {				
+				ldao.insertBookListing(book.getId(), l.getId() );
 			}
 			return Response.ok(book, MediaType.APPLICATION_JSON).build();
 		} catch (DatabaseException e) {

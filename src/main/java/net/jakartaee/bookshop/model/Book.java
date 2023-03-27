@@ -88,7 +88,9 @@ public class Book {
 	private Subject _subject;
 	
 	private List<Tag> _tags;
+	private List<Listing> _listings;
 	
+
 	@JsonIgnore						// This is a dummy variable that is created on-demand by getPriceStr		
 	public String priceStr;
 
@@ -292,6 +294,14 @@ public class Book {
 
 	public void setTags(List<Tag> tags) {
 		_tags = tags;
+	}
+
+	public List<Listing> getListings() {
+		return _listings;
+	}
+
+	public void setListings(List<Listing> listings) {
+		_listings = listings;
 	}
 
 	public String getVolume() {
